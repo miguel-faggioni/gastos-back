@@ -1,5 +1,8 @@
-import { BaseEntity, Column, Entity, OneToOne,
-         PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity,
+         OneToOne,
+         PrimaryGeneratedColumn,
+} from 'typeorm';
+
 import { Pessoa } from './Pessoa.model';
 
 @Entity('usuario')
