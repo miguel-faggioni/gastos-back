@@ -7,6 +7,7 @@ import { HealthRouter } from '../app/routes/Health.route';
 import { AvisoGeralRouter } from '../app/routes/AvisoGeral.route';
 import { CategoriaRouter } from '../app/routes/Categoria.route';
 import { ModoDePagamentoRouter } from '../app/routes/Modo_de_pagamento.route';
+import { DebitoAutomaticoRouter } from '../app/routes/Debito_automatico.route';
 
 interface IROUTER {
   path: string;
@@ -19,6 +20,7 @@ const Auth = new AuthRouter();
 const AvisoGeral = new AvisoGeralRouter();
 const Categoria = new CategoriaRouter();
 const ModoDePagamento = new ModoDePagamentoRouter();
+const DebitoAutomatico = new DebitoAutomaticoRouter();
 
 export const ROUTER: IROUTER[] = [{
   handler: AvisoGeral.router,
@@ -46,4 +48,10 @@ export const ROUTER: IROUTER[] = [{
     jwt({secret: config.SECRET}),
   ],
   path: '/modos-de-pagamento',
-}];
+},{
+  handler: DebitoAutomatico.router,
+  middleware: [
+    jwt({secret: config.SECRET}),
+  ],
+  path: '/debitos-automaticos',
+},];
