@@ -13,6 +13,7 @@ export class CategoriaRouter extends Router {
       .get('/', this.handler(CategoriaController.prototype.all))
       .delete('/:id', [
         CheckDelete,
+        validator(categoriaSchema.remove),
       ], this.handler(CategoriaController.prototype.remove))
       .post('/', [
         validator(categoriaSchema.create),

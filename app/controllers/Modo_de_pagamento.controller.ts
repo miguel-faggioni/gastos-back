@@ -5,6 +5,8 @@ import { ModoDePagamento } from '../models/Modo_de_pagamento.model';
 import { ModoDePagamentoService } from '../services/Modo_de_pagamento.service';
 import { AuthService } from '../services/Auth.service';
 import { PessoaService } from '../services/Pessoa.service';
+import { GastoService } from '../services/Gasto.service';
+import { DebitoAutomaticoService } from '../services/Debito_automatico.service';
 
 export class ModoDePagamentoController extends Controller {
 
@@ -27,7 +29,38 @@ export class ModoDePagamentoController extends Controller {
   }
 
   public async remove(): Promise<express.Response> {
+    const { substituirPor } = this.req.body as { substituirPor: number };
     const modoDePagamento = this.res.locals.modoDePagamento;
+
+    if ( substituirPor !== undefined ) {
+
+      let token;
+      try {
+        token = await AuthService.extractToken(this.req) as { id: number };
+      } catch (ex) {
+        log.error(ex);
+        return this.res.status(500).send();
+      }
+
+      try {
+        await GastoService.update({
+          modo_de_pagamento: modoDePagamento,
+          pessoa: {id: token.id},
+        }, {
+          modo_de_pagamento: { id: substituirPor }
+        });
+        await DebitoAutomaticoService.update({
+          modo_de_pagamento: modoDePagamento,
+          pessoa: {id: token.id},
+        }, {
+          modo_de_pagamento: { id: substituirPor }
+        });
+      } catch (ex) {
+        log.error(ex);
+        return this.res.status(500).send();
+      }
+
+    }
 
     try {
       await ModoDePagamentoService.remove(modoDePagamento);

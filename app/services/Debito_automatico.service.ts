@@ -1,4 +1,4 @@
-import { getCustomRepository, Repository } from 'typeorm';
+import { getCustomRepository, Repository, DeepPartial, UpdateResult } from 'typeorm';
 import { DebitoAutomatico } from '../models/Debito_automatico.model';
 import { DebitoAutomaticoRepository } from '../repository/Debito_automatico.repository';
 
@@ -20,6 +20,10 @@ export class DebitoAutomaticoService {
 
   public static save(debitoAutomatico: DebitoAutomatico): Promise<DebitoAutomatico> {
     return getCustomRepository(DebitoAutomaticoRepository).save(debitoAutomatico);
+  }
+
+  public static update(criteria: {}, debitoAutomatico: DeepPartial<DebitoAutomatico>): Promise<UpdateResult> {
+    return getCustomRepository(DebitoAutomaticoRepository).update(criteria, debitoAutomatico);
   }
 
 }

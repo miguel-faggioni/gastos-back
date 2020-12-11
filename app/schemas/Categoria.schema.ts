@@ -6,4 +6,7 @@ export const categoriaSchema = {
     sigla: string().required(),
     icone: string().required(),
   }),
+  remove: object().keys({
+    substituirPor: number(),
+  }),
 };

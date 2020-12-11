@@ -5,6 +5,8 @@ import { Categoria } from '../models/Categoria.model';
 import { CategoriaService } from '../services/Categoria.service';
 import { AuthService } from '../services/Auth.service';
 import { PessoaService } from '../services/Pessoa.service';
+import { GastoService } from '../services/Gasto.service';
+import { DebitoAutomaticoService } from '../services/Debito_automatico.service';
 
 export class CategoriaController extends Controller {
 
@@ -27,7 +29,38 @@ export class CategoriaController extends Controller {
   }
 
   public async remove(): Promise<express.Response> {
+    const { substituirPor } = this.req.body as { substituirPor: number };
     const categoria = this.res.locals.categoria;
+
+    if ( substituirPor !== undefined ) {
+
+      let token;
+      try {
+        token = await AuthService.extractToken(this.req) as { id: number };
+      } catch (ex) {
+        log.error(ex);
+        return this.res.status(500).send();
+      }
+
+      try {
+        await GastoService.update({
+          categoria: categoria,
+          pessoa: {id: token.id},
+        }, {
+          categoria: { id: substituirPor }
+        });
+        await DebitoAutomaticoService.update({
+          categoria: categoria,
+          pessoa: {id: token.id},
+        }, {
+          categoria: { id: substituirPor }
+        });
+      } catch (ex) {
+        log.error(ex);
+        return this.res.status(500).send();
+      }
+
+    }
 
     try {
       await CategoriaService.remove(categoria);
