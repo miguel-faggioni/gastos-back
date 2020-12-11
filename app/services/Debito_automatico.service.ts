@@ -14,16 +14,8 @@ export class DebitoAutomaticoService {
     return getCustomRepository(DebitoAutomaticoRepository).find(opts);
   }
 
-  public static bulkCreate(DebitoAutomaticos: DebitoAutomatico[]): Promise<DebitoAutomatico[]> {
-    return getCustomRepository(DebitoAutomaticoRepository).bulkCreate(DebitoAutomaticos);
-  }
-
   public static remove(debitoAutomatico: DebitoAutomatico): Promise<DebitoAutomatico> {
     return getCustomRepository(DebitoAutomaticoRepository).remove(debitoAutomatico);
-  }
-
-  public static removeById(id: number): Promise<DebitoAutomatico> {
-    return getCustomRepository(DebitoAutomaticoRepository).removeById(id);
   }
 
   public static save(debitoAutomatico: DebitoAutomatico): Promise<DebitoAutomatico> {

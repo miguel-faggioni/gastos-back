@@ -14,16 +14,8 @@ export class CategoriaService {
     return getCustomRepository(CategoriaRepository).find(opts);
   }
 
-  public static bulkCreate(Categorias: Categoria[]): Promise<Categoria[]> {
-    return getCustomRepository(CategoriaRepository).bulkCreate(Categorias);
-  }
-
   public static remove(categoria: Categoria): Promise<Categoria> {
     return getCustomRepository(CategoriaRepository).remove(categoria);
-  }
-
-  public static removeById(id: number): Promise<Categoria> {
-    return getCustomRepository(CategoriaRepository).removeById(id);
   }
 
   public static save(categoria: Categoria): Promise<Categoria> {

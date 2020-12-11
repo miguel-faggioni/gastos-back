@@ -14,16 +14,8 @@ export class ModoDePagamentoService {
     return getCustomRepository(ModoDePagamentoRepository).find(opts);
   }
 
-  public static bulkCreate(ModoDePagamentos: ModoDePagamento[]): Promise<ModoDePagamento[]> {
-    return getCustomRepository(ModoDePagamentoRepository).bulkCreate(ModoDePagamentos);
-  }
-
   public static remove(modoDePagamento: ModoDePagamento): Promise<ModoDePagamento> {
     return getCustomRepository(ModoDePagamentoRepository).remove(modoDePagamento);
-  }
-
-  public static removeById(id: number): Promise<ModoDePagamento> {
-    return getCustomRepository(ModoDePagamentoRepository).removeById(id);
   }
 
   public static save(modoDePagamento: ModoDePagamento): Promise<ModoDePagamento> {

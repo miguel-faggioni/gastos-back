@@ -14,16 +14,8 @@ export class GastoService {
     return getCustomRepository(GastoRepository).find(opts);
   }
 
-  public static bulkCreate(Gastos: Gasto[]): Promise<Gasto[]> {
-    return getCustomRepository(GastoRepository).bulkCreate(Gastos);
-  }
-
   public static remove(gasto: Gasto): Promise<Gasto> {
     return getCustomRepository(GastoRepository).remove(gasto);
-  }
-
-  public static removeById(id: number): Promise<Gasto> {
-    return getCustomRepository(GastoRepository).removeById(id);
   }
 
   public static save(gasto: Gasto): Promise<Gasto> {

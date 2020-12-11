@@ -22,7 +22,7 @@ export class Categoria extends BaseEntity {
   @Column('text')
   public icone: string;
 
-  @ManyToOne(() => Pessoa, pessoa => pessoa.categorias)
+  @ManyToOne(() => Pessoa, pessoa => pessoa.categorias, { nullable: false })
   public pessoa: Pessoa;
 
   @OneToMany(() => Gasto, gasto => gasto.categoria)

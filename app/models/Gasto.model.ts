@@ -17,16 +17,16 @@ export class Gasto extends BaseEntity {
   @Column('decimal', {precision: 13, scale: 2})
   public valor: number;
 
-  @ManyToOne(() => Data, data => data.gastos)
+  @ManyToOne(() => Data, data => data.gastos, { nullable: false })
   public data: Data;
 
-  @ManyToOne(() => Categoria, categoria => categoria.gastos)
+  @ManyToOne(() => Categoria, categoria => categoria.gastos, { nullable: false })
   public categoria: Categoria;
 
-  @ManyToOne(() => ModoDePagamento, mdp => mdp.gastos)
+  @ManyToOne(() => ModoDePagamento, mdp => mdp.gastos, { nullable: false })
   public modo_de_pagamento: ModoDePagamento;
 
-  @ManyToOne(() => Pessoa, pessoa => pessoa.gastos)
+  @ManyToOne(() => Pessoa, pessoa => pessoa.gastos, { nullable: false })
   public pessoa: Pessoa;
 
 }

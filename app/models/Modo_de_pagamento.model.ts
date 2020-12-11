@@ -22,7 +22,7 @@ export class ModoDePagamento extends BaseEntity {
   @Column('text')
   public icone: string;
 
-  @ManyToOne(() => Pessoa, pessoa => pessoa.modos_de_pagamento)
+  @ManyToOne(() => Pessoa, pessoa => pessoa.modos_de_pagamento, { nullable: false })
   public pessoa: Pessoa;
 
   @OneToMany(() => Gasto, gasto => gasto.modo_de_pagamento)
