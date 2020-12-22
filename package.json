@@ -49,6 +49,7 @@
     "class-validator": "^0.9.1",
     "cluster": "^0.7.7",
     "cors": "^2.8.4",
+    "excel4node": "^1.7.2",
     "express": "^4.16.4",
     "express-formidable": "^1.2.0",
     "express-jwt": "^5.3.1",
