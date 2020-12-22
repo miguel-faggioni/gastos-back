@@ -12,6 +12,7 @@ import { GastoService } from '../services/Gasto.service';
 import { DebitoAutomaticoService } from '../services/Debito_automatico.service';
 import { DataService } from '../services/Data.service';
 import { XlsxService } from '../services/Xlsx.service';
+import * as csv_stringify from 'csv-stringify';
 
 export class GastoController extends Controller {
 
@@ -73,6 +74,29 @@ export class GastoController extends Controller {
 
     switch (format) {
       case 'csv':
+        // create stream
+        const Stream = require('stream');
+        const csvStream = new Stream.CsvStream({objectMode: true});
+
+        // add values to stream
+        gastos.forEach((gasto) => {
+          csvStream.push({
+            'valor': gasto.valor,
+            'categoria': gasto.categoria.nome,
+            'modo de pagamento': gasto.modo_de_pagamento.nome,
+            'data': `${gasto.data.dia}/${gasto.data.mes}/${gasto.data.ano} - ${gasto.data.hora}h${gasto.data.minuto}`
+          });
+        });
+
+        // finish stream
+        csvStream.push(null);
+
+        // convert to csv and return
+        return csvStream
+          .pipe(csv_stringify({
+            header: true
+          }))
+          .pipe(this.res);
 
         break;
       case 'xlsx':
