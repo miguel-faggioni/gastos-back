@@ -8,6 +8,7 @@ import { AvisoGeralRouter } from '../app/routes/AvisoGeral.route';
 import { CategoriaRouter } from '../app/routes/Categoria.route';
 import { ModoDePagamentoRouter } from '../app/routes/Modo_de_pagamento.route';
 import { DebitoAutomaticoRouter } from '../app/routes/Debito_automatico.route';
+import { GastoRouter } from '../app/routes/Gasto.route';
 
 interface IROUTER {
   path: string;
@@ -21,6 +22,7 @@ const AvisoGeral = new AvisoGeralRouter();
 const Categoria = new CategoriaRouter();
 const ModoDePagamento = new ModoDePagamentoRouter();
 const DebitoAutomatico = new DebitoAutomaticoRouter();
+const Gasto = new GastoRouter();
 
 export const ROUTER: IROUTER[] = [{
   handler: AvisoGeral.router,
@@ -54,4 +56,10 @@ export const ROUTER: IROUTER[] = [{
     jwt({secret: config.SECRET}),
   ],
   path: '/debitos-automaticos',
-},];
+},{
+  handler: Gasto.router,
+  middleware: [
+    jwt({secret: config.SECRET}),
+  ],
+  path: '/gastos',
+}];
