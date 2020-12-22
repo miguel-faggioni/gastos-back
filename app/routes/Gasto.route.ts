@@ -14,6 +14,7 @@ export class GastoRouter extends Router {
       .get('/:id', [
         CheckParamsId,
       ], this.handler(GastoController.prototype.find))
+      .get('/download/:format', this.handler(GastoController.prototype.download))
       .delete('/:id', [
         CheckParamsId,
       ], this.handler(GastoController.prototype.remove))

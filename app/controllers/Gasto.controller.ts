@@ -11,6 +11,7 @@ import { PessoaService } from '../services/Pessoa.service';
 import { GastoService } from '../services/Gasto.service';
 import { DebitoAutomaticoService } from '../services/Debito_automatico.service';
 import { DataService } from '../services/Data.service';
+import { XlsxService } from '../services/Xlsx.service';
 
 export class GastoController extends Controller {
 
@@ -50,6 +51,58 @@ export class GastoController extends Controller {
       return this.res.status(500).send();
     }
     return this.res.status(200).send(gasto);
+  }
+
+  public async download() {
+    // TODO: permitir selecionar startDate e endDate
+    // TODO: permitir escolher se quer 1 worksheet por ano/mes/tudo junto
+    const format = this.req.params.format;
+
+    let token, gastos;
+    try {
+      token = await AuthService.extractToken(this.req) as { id: number };
+      gastos = await GastoService.findManyBy({
+        pessoa: {id: token.id},
+      }, {
+        relations: ['categoria', 'modo_de_pagamento', 'data'],
+      });
+    } catch (ex) {
+      log.error(ex);
+      return this.res.status(500).send();
+    }
+
+    switch (format) {
+      case 'csv':
+
+        break;
+      case 'xlsx':
+        const excel = new XlsxService();
+
+        // add 1st worksheet with Gastos
+        excel.addWorksheet(
+          'Gastos',
+          [
+            // { name: 'id', value: (gasto: Gasto) => gasto.id, },
+            { name: 'valor', value: (gasto: Gasto) => gasto.valor, },
+            // { name: 'categoria.sigla', value: (gasto: Gasto) => gasto.categoria.sigla, },
+            { name: 'categoria', value: (gasto: Gasto) => gasto.categoria.nome, },
+            // { name: 'modo de pagamento.sigla', value: (gasto: Gasto) => gasto.modo_de_pagamento.sigla },
+            { name: 'modo de pagamento', value: (gasto: Gasto) => gasto.modo_de_pagamento.nome },
+            { name: 'data', value: (gasto: Gasto) => `${gasto.data.dia}/${gasto.data.mes}/${gasto.data.ano} - ${gasto.data.hora}h${gasto.data.minuto}`, },
+          ],
+          gastos
+        );
+
+        // return the excel file
+        return excel.write('Gastos.xlsx', this.res);
+
+        break;
+      default:
+        const allowedFormats = ['csv', 'xlsx'];
+        return this.res.status(400).send(`Format "${format}" not allowed. Allowed formats: ${allowedFormats}`);
+        break;
+    }
+
   }
 
   public async removeAll(): Promise<express.Response> {
