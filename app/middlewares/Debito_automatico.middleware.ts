@@ -5,7 +5,7 @@ import { DebitoAutomaticoService } from '../services/Debito_automatico.service';
 import { CategoriaService } from '../services/Categoria.service';
 import { ModoDePagamentoService } from '../services/Modo_de_pagamento.service';
 
-export async function CheckDelete(req: express.Request, res: express.Response, next: express.NextFunction) {
+export async function CheckParamsId(req: express.Request, res: express.Response, next: express.NextFunction) {
   const idDebitoAutomatico = req.params.id;
   const token = await AuthService.extractToken(req) as { id: number };
 
@@ -21,7 +21,7 @@ export async function CheckDelete(req: express.Request, res: express.Response, n
   }
 
   if ( !debitoAutomatico ) {
-    log.warn('CheckDelete failed');
+    log.warn('CheckParamsId failed');
     return res.status(404).send(`DebitoAutomatico não encontrado [id=${idDebitoAutomatico}]`);
   }
 
@@ -34,40 +34,46 @@ export async function CheckCreate(req: express.Request, res: express.Response, n
   const { idCategoria, idModoDePagamento } = req.body as { idCategoria: number, idModoDePagamento: number };
   const token = await AuthService.extractToken(req) as { id: number };
 
-  let categoria;
-  try {
-    categoria = await CategoriaService.findOneBy({
-      id: idCategoria,
-      pessoa: { id: token.id },
-    });
-  } catch (ex) {
-    log.error(ex);
-    return res.status(500).send();
+  if ( idCategoria !== undefined ) {
+    let categoria;
+    try {
+      categoria = await CategoriaService.findOneBy({
+        id: idCategoria,
+        pessoa: { id: token.id },
+      });
+    } catch (ex) {
+      log.error(ex);
+      return res.status(500).send();
+    }
+
+    if ( !categoria ) {
+      log.warn('CheckCreate failed');
+      return res.status(404).send(`Categoria não encontrada [id=${idCategoria}]`);
+    }
+
+    res.locals.categoria = categoria;
   }
 
-  if ( !categoria ) {
-    log.warn('CheckCreate failed');
-    return res.status(404).send(`Categoria não encontrada [id=${idCategoria}]`);
+  if ( idModoDePagamento !== undefined ) {
+    let modoDePagamento;
+    try {
+      modoDePagamento = await ModoDePagamentoService.findOneBy({
+        id: idModoDePagamento,
+        pessoa: { id: token.id },
+      });
+    } catch (ex) {
+      log.error(ex);
+      return res.status(500).send();
+    }
+
+    if ( !modoDePagamento ) {
+      log.warn('CheckCreate failed');
+      return res.status(404).send(`ModoDePagamento não encontrado [id=${idModoDePagamento}]`);
+    }
+
+    res.locals.modo_de_pagamento = modoDePagamento;
   }
 
-  let modoDePagamento;
-  try {
-    modoDePagamento = await ModoDePagamentoService.findOneBy({
-      id: idModoDePagamento,
-      pessoa: { id: token.id },
-    });
-  } catch (ex) {
-    log.error(ex);
-    return res.status(500).send();
-  }
-
-  if ( !modoDePagamento ) {
-    log.warn('CheckCreate failed');
-    return res.status(404).send(`ModoDePagamento não encontrado [id=${idModoDePagamento}]`);
-  }
-
-  res.locals.categoria = categoria;
-  res.locals.modo_de_pagamento = modoDePagamento;
   next();
 
 }

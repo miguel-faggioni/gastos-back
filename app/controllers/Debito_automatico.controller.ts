@@ -75,4 +75,23 @@ export class DebitoAutomaticoController extends Controller {
     return this.res.status(201).send();
   }
 
+  public async update(): Promise<express.Response> {
+    const { dia, valor } = this.req.body as { dia: number, valor: number };
+    const { debitoAutomatico, categoria, modo_de_pagamento } = this.res.locals as { debitoAutomatico: DebitoAutomatico, categoria: Categoria, modo_de_pagamento: ModoDePagamento };
+
+    if ( dia !== undefined ) {debitoAutomatico.dia_do_mes = dia; }
+    if (valor !== undefined) {debitoAutomatico.valor = valor; }
+    if (categoria !== undefined) {debitoAutomatico.categoria = categoria; }
+    if (modo_de_pagamento !== undefined) {debitoAutomatico.modo_de_pagamento = modo_de_pagamento; }
+
+    try {
+      await DebitoAutomaticoService.save(debitoAutomatico);
+    } catch (ex) {
+      log.error(ex);
+      return this.res.status(500).send();
+    }
+
+    return this.res.status(204).send();
+  }
+
 }

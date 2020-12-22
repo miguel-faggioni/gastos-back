@@ -7,4 +7,10 @@ export const debitoAutomaticoSchema = {
     idCategoria: number().required(),
     idModoDePagamento: number().required(),
   }),
+  update: object().keys({
+    dia: number(),
+    valor: number(),
+    idCategoria: number(),
+    idModoDePagamento: number(),
+  }),
 };
