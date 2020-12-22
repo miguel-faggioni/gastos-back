@@ -17,6 +17,7 @@ export class GastoRouter extends Router {
       .delete('/:id', [
         CheckParamsId,
       ], this.handler(GastoController.prototype.remove))
+      .delete('/', this.handler(GastoController.prototype.removeAll))
       .post('/', [
         validator(gastoSchema.create),
         CheckCreate,

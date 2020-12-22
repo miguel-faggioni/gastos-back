@@ -18,6 +18,14 @@ export class GastoService {
     return getCustomRepository(GastoRepository).remove(gasto);
   }
 
+  public static removeMany(idPessoa: number): Promise<any> {
+    return getCustomRepository(GastoRepository)
+      .createQueryBuilder()
+      .delete()
+      .where('"pessoaId" = :idPessoa', { idPessoa: idPessoa })
+      .execute();
+  }
+
   public static save(gasto: Gasto): Promise<Gasto> {
     return getCustomRepository(GastoRepository).save(gasto);
   }

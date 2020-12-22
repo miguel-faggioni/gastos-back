@@ -52,6 +52,19 @@ export class GastoController extends Controller {
     return this.res.status(200).send(gasto);
   }
 
+  public async removeAll(): Promise<express.Response> {
+    let token, gastos;
+    try {
+      token = await AuthService.extractToken(this.req) as { id: number };
+      gastos = await GastoService.removeMany(token.id);
+    } catch (ex) {
+      log.error(ex);
+      return this.res.status(500).send();
+    }
+
+    return this.res.status(204).send();
+  }
+
   public async remove(): Promise<express.Response> {
     const gasto = this.res.locals.gasto;
 
