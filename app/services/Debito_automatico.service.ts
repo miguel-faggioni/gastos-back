@@ -9,9 +9,7 @@ export class DebitoAutomaticoService {
 
   private static getJobQuery(id: number): string {
     return `
-BEGIN TRANSACTION;
-
-INSERT INTO data (unix_timestamp, dia, mes, ano, dia_da_semana, semana_do_ano, hora, minuto, segundo)
+INSERT INTO public.data (unix_timestamp, dia, mes, ano, dia_da_semana, semana_do_ano, hora, minuto, segundo)
 SELECT
        CAST( 1000*EXTRACT(EPOCH FROM NOW()) AS BIGINT)    AS unix_timestamp,
        DATE_PART('day',NOW())                             AS dia,
@@ -24,18 +22,20 @@ SELECT
        CAST( DATE_PART('second',NOW()) AS SMALLINT)       AS segundo
 ON CONFLICT DO NOTHING;
 
-INSERT INTO gasto (valor, "dataUnixTimestamp", "categoriaId", "modoDePagamentoId", "pessoaId")
+INSERT INTO public.gasto (valor, "dataUnixTimestamp", "categoriaId", "modoDePagamentoId", "pessoaId")
 SELECT
        valor,
        CAST( 1000*EXTRACT(EPOCH FROM NOW()) AS BIGINT)    AS "dataUnixTimeStamp",
        "categoriaId",
        "modoDePagamentoId",
        "pessoaId"
-FROM debito_automatico
+FROM public.debito_automatico
 WHERE id=${id};
-
-COMMIT;
 `;
+  }
+
+  private static getJobName(id: number): string {
+    return `job__debito_automatico__${id}`;
   }
 
   public static findOneBy(whereClause: any, options?: any): Promise<DebitoAutomatico> {
@@ -59,9 +59,8 @@ COMMIT;
           .createQueryBuilder()
           .delete()
           .from(JobsToRun)
-          .where('tabela = :tabela AND id_da_entidade = :id', {
-            tabela: 'debito_automatico',
-            id: id,
+          .where('name = :name', {
+            name: this.getJobName(id),
           })
           .execute()
           .then(() => {
@@ -81,22 +80,28 @@ COMMIT;
           .createQueryBuilder()
           .delete()
           .from(JobsToRun)
-          .where('tabela = :tabela AND id_da_entidade = :id', {
-            tabela: 'debito_automatico',
-            id: created.id,
+          .where('name = :name', {
+            name: this.getJobName(created.id),
           })
           .execute()
           .then(() => {
+            // get when it is supposed to run next
+            const now = new Date();
+            const runAt = new Date(now.getFullYear(), now.getMonth(), created.dia_do_mes);
+            if ( runAt.getTime() < now.getTime() ) {
+              // run only next month
+              runAt.setMonth(runAt.getMonth() + 1);
+            }
             // create a row on JobsToRun
             return getCustomRepository(JobsToRunRepository)
               .createQueryBuilder()
               .insert()
               .into(JobsToRun)
               .values({
-                dia_do_mes_pra_rodar: created.dia_do_mes,
-                tabela: 'debito_automatico',
-                id_da_entidade: created.id,
+                name: this.getJobName(created.id),
                 sql: this.getJobQuery(created.id),
+                run_at: runAt,
+                interval: '1 month',
               })
               .execute()
               .then(() => {
