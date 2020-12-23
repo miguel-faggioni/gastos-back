@@ -6,6 +6,6 @@ export const config = {
   VERSION: require('./package.json').version,
   SERVERNAME: SERVERNAME,
   DATABASE: DATABASE_CONFIGURATION,
-  PORT_APP: 5000,
+  PORT_APP: 6000,
   SECRET: DATABASE_CONFIGURATION.SECRET,
 };
