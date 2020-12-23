@@ -15,7 +15,7 @@ import { ROUTER } from './Router';
 // configurações do Sentry
 import * as Sentry from '@sentry/node';
 Sentry.init({
-  dsn: 'https://af8b10f819874e9ca3f7f8044bcbf3bc@sentry.io/1498947',
+  dsn: 'https://a81dfbce8d8e4cf2ae1f6dcf26dcae79@o278147.ingest.sentry.io/5568952',
   level: 'warn',
   release: 'backend@' + config.VERSION,
   environment: ( config.SERVERNAME === 'localhost' ? 'development' : 'production' ),
