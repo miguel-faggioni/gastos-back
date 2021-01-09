@@ -1,9 +1,11 @@
 #!/bin/sh
 
+current_dir=$(dirname -- "$0")
+
 psql "\
-host=$( cat database.ts | grep -oP "(?<= SERVER: ').*(?=',)" ) \
-port=$( cat database.ts | grep -oP "(?<= PORT_DB: ).*(?=,)" ) \
-dbname=$( cat database.ts | grep -oP "(?<= DB: ').*(?=',)" ) \
-user=$( cat database.ts | grep -oP "(?<= USER_DB: ').*(?=',)" ) \
-password=$( cat database.ts | grep -oP "(?<= PASSWORD: ').*(?=',)" )\
+host=$( cat ${current_dir}/database.js | grep -oP "(?<= SERVER: ').*(?=',)" ) \
+port=$( cat ${current_dir}/database.js | grep -oP "(?<= PORT_DB: ).*(?=,)" ) \
+dbname=$( cat ${current_dir}/database.js | grep -oP "(?<= DB: ').*(?=',)" ) \
+user=$( cat ${current_dir}/database.js | grep -oP "(?<= USER_DB: ').*(?=',)" ) \
+password=$( cat ${current_dir}/database.js | grep -oP "(?<= PASSWORD: ').*(?=',)" )\
 " -c 'CALL run();'
