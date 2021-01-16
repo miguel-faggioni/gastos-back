@@ -28,6 +28,9 @@ export class GastoController extends Controller {
         pessoa: {id: token.id},
       }, {
         relations: ['categoria', 'modo_de_pagamento', 'data'],
+        order: {
+          'data.unix_timestamp': 'DESC', // latest first
+        }
       });
     } catch (ex) {
       log.error(ex);
