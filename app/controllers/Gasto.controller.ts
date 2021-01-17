@@ -236,7 +236,7 @@ export class GastoController extends Controller {
       return this.res.status(500).send();
     }
 
-    return this.res.status(201).send();
+    return this.res.status(200).send(gasto);
   }
 
   public async update(): Promise<express.Response> {
