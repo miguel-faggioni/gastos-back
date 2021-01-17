@@ -268,7 +268,7 @@ export class GastoController extends Controller {
       return this.res.status(500).send();
     }
 
-    return this.res.status(204).send();
+    return this.res.status(200).send(gasto);
   }
 
 }
