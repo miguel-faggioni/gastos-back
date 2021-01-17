@@ -79,7 +79,7 @@ export class GastoController extends Controller {
       case 'csv':
         // create stream
         const Stream = require('stream');
-        const csvStream = new Stream.CsvStream({objectMode: true});
+        const csvStream = new Stream.Transform({objectMode: true});
 
         // add values to stream
         gastos.forEach((gasto) => {
@@ -87,7 +87,7 @@ export class GastoController extends Controller {
             'valor': gasto.valor,
             'categoria': gasto.categoria.nome,
             'modo de pagamento': gasto.modo_de_pagamento.nome,
-            'data': `${gasto.data.dia}/${gasto.data.mes}/${gasto.data.ano} - ${gasto.data.hora}h${gasto.data.minuto}`
+            'data': `${gasto.data.dia}/${('0' + (gasto.data.mes + 1)).slice(-2)}/${gasto.data.ano} - ${gasto.data.hora}h${('0' + gasto.data.minuto).slice(-2)}`
           });
         });
 
