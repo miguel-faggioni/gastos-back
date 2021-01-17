@@ -1,7 +1,7 @@
 import { Router, validator } from 'camesine';
 import * as express from 'express';
 
-import { CheckParamsId, CheckCreate } from '../middlewares/Gasto.middleware';
+import { CheckParamsId, CheckCreate, CheckDownloadParams } from '../middlewares/Gasto.middleware';
 import { GastoController } from '../controllers/Gasto.controller';
 import { gastoSchema } from '../schemas/Gasto.schema';
 
@@ -14,7 +14,9 @@ export class GastoRouter extends Router {
       .get('/:id', [
         CheckParamsId,
       ], this.handler(GastoController.prototype.find))
-      .get('/download/:format', this.handler(GastoController.prototype.download))
+      .get('/download/:format', [
+        CheckDownloadParams,
+      ], this.handler(GastoController.prototype.download))
       .delete('/:id', [
         CheckParamsId,
       ], this.handler(GastoController.prototype.remove))

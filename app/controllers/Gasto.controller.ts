@@ -1,5 +1,7 @@
 import { Controller } from 'camesine';
 import * as express from 'express';
+import * as csv_stringify from 'csv-stringify';
+import { Between, MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
 import { log } from '../../config/Logger';
 import { Gasto } from '../models/Gasto.model';
 import { Data } from '../models/Data.model';
@@ -12,7 +14,6 @@ import { GastoService } from '../services/Gasto.service';
 import { DebitoAutomaticoService } from '../services/Debito_automatico.service';
 import { DataService } from '../services/Data.service';
 import { XlsxService } from '../services/Xlsx.service';
-import * as csv_stringify from 'csv-stringify';
 
 export class GastoController extends Controller {
 
@@ -58,21 +59,58 @@ export class GastoController extends Controller {
   }
 
   public async download() {
-    // TODO: permitir selecionar startDate e endDate
     // TODO: permitir escolher se quer 1 worksheet por ano/mes/tudo junto
-    const format = this.req.params.format;
+    const {format} = this.req.params;
+    const {startDate, endDate} = this.res.locals as {startDate: Date, endDate: Date};
 
-    let token, gastos;
+    let token;
     try {
       token = await AuthService.extractToken(this.req) as { id: number };
-      gastos = await GastoService.findManyBy({
-        pessoa: {id: token.id},
-      }, {
+    } catch (ex) {
+      log.error(ex);
+      return this.res.status(500).send();
+    }
+
+    let where = {
+      pessoa: {id: token.id},
+    };
+
+    if (startDate !== undefined && endDate !== undefined) {
+      where = Object.assign({
+        data: {
+          unix_timestamp: Between(startDate.getTime(), endDate.getTime()),
+        },
+      }, where);
+    } else {
+      if (startDate !== undefined) {
+        where = Object.assign({
+          data: {
+            unix_timestamp: MoreThanOrEqual(startDate.getTime()),
+          },
+        }, where);
+      }
+
+      if (endDate !== undefined) {
+        where = Object.assign({
+          data: {
+            unix_timestamp: LessThanOrEqual(startDate.getTime()),
+          },
+        }, where);
+      }
+    }
+
+    let gastos;
+    try {
+      gastos = await GastoService.findManyBy(where, {
         relations: ['categoria', 'modo_de_pagamento', 'data'],
       });
     } catch (ex) {
       log.error(ex);
       return this.res.status(500).send();
+    }
+
+    function formatData(data: Data) {
+      return `${data.dia}/${('0' + (data.mes + 1)).slice(-2)}/${data.ano} - ${data.hora}h${('0' + data.minuto).slice(-2)}`;
     }
 
     switch (format) {
@@ -87,7 +125,7 @@ export class GastoController extends Controller {
             'valor': gasto.valor,
             'categoria': gasto.categoria.nome,
             'modo de pagamento': gasto.modo_de_pagamento.nome,
-            'data': `${gasto.data.dia}/${('0' + (gasto.data.mes + 1)).slice(-2)}/${gasto.data.ano} - ${gasto.data.hora}h${('0' + gasto.data.minuto).slice(-2)}`
+            'data': formatData(gasto.data),
           });
         });
 
@@ -115,7 +153,7 @@ export class GastoController extends Controller {
             { name: 'categoria', value: (gasto: Gasto) => gasto.categoria.nome, },
             // { name: 'modo de pagamento.sigla', value: (gasto: Gasto) => gasto.modo_de_pagamento.sigla },
             { name: 'modo de pagamento', value: (gasto: Gasto) => gasto.modo_de_pagamento.nome },
-            { name: 'data', value: (gasto: Gasto) => `${gasto.data.dia}/${gasto.data.mes}/${gasto.data.ano} - ${gasto.data.hora}h${gasto.data.minuto}`, },
+            { name: 'data', value: (gasto: Gasto) => formatData(gasto.data) },
           ],
           gastos
         );

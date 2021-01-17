@@ -1,5 +1,6 @@
 import * as express from 'express';
 import { log } from '../../config/Logger';
+import { date, object } from 'joi';
 import { AuthService } from '../services/Auth.service';
 import { GastoService } from '../services/Gasto.service';
 import { CategoriaService } from '../services/Categoria.service';
@@ -76,4 +77,40 @@ export async function CheckCreate(req: express.Request, res: express.Response, n
 
   next();
 
+}
+
+export async function CheckDownloadParams(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const {format} = req.params as { format: string};
+  const {startDate, endDate} = req.query as { startDate: string, endDate: string};
+
+  // check format
+  const validFormats = ['csv', 'xlsx'];
+  if (validFormats.indexOf(format) === -1) {
+    return res.status(400).send(`Format "${format}" not allowed. Allowed formats: ${validFormats}`);
+  }
+
+  // check startDate and endDate are ISO dates
+  const schema = object().keys({
+    startDate: date().iso(),
+    endDate: date().iso(),
+  });
+  const { error } = schema.validate({
+    startDate: startDate,
+    endDate: endDate,
+  });
+
+  if (error) {
+    const { message } = error;
+    return res.status(400).send(message);
+  }
+
+  // save to res.locals
+  if (startDate !== undefined) {
+    res.locals.startDate = new Date(startDate);
+  }
+  if (endDate !== undefined) {
+    res.locals.endDate = new Date(endDate);
+  }
+
+  next();
 }
