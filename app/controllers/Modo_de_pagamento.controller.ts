@@ -99,7 +99,7 @@ export class ModoDePagamentoController extends Controller {
       return this.res.status(500).send();
     }
 
-    return this.res.status(201).send();
+    return this.res.status(200).send(modoDePagamento);
   }
 
 }
