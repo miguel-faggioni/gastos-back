@@ -6,7 +6,15 @@ import { BaseEntity, Column, Entity,
 import { Categoria } from './Categoria.model';
 import { ModoDePagamento } from './Modo_de_pagamento.model';
 import { Pessoa } from './Pessoa.model';
-import { TipoGasto } from './Gasto.model';
+
+// I have no fucking idea why importing doesn't work
+// but it says it is undefined for some fucking reason
+// import { TipoGasto } from './Gasto.model';
+enum TipoGasto {
+  Fixo = 'Fixo',
+  Variavel = 'Variável',
+  Renda = 'Renda',
+}
 
 @Entity('debito_automatico')
 export class DebitoAutomatico extends BaseEntity {
