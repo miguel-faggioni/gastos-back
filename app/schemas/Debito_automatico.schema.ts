@@ -9,7 +9,7 @@ export const debitoAutomaticoSchema = {
     idCategoria: number().required(),
     idModoDePagamento: number().required(),
     tipo: string().valid(...Object.values(TipoGasto)),
-    obs: string(),
+    obs: string().allow(''),
   }),
   update: object().keys({
     dia: number(),
@@ -17,6 +17,6 @@ export const debitoAutomaticoSchema = {
     idCategoria: number(),
     idModoDePagamento: number(),
     tipo: string().valid(...Object.values(TipoGasto)),
-    obs: string(),
+    obs: string().allow(''),
   }),
 };

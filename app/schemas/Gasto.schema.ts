@@ -9,7 +9,7 @@ export const gastoSchema = {
     idModoDePagamento: number().required(),
     data: date().iso().required(),
     tipo: string().valid(...Object.values(TipoGasto)),
-    obs: string(),
+    obs: string().allow(''),
   }),
   update: object().keys({
     valor: number(),
@@ -17,6 +17,6 @@ export const gastoSchema = {
     idModoDePagamento: number(),
     data: date().iso(),
     tipo: string().valid(...Object.values(TipoGasto)),
-    obs: string(),
+    obs: string().allow(''),
   }),
 };
