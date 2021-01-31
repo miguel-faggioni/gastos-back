@@ -3,7 +3,7 @@ import * as express from 'express';
 import * as csv_stringify from 'csv-stringify';
 import { Between, MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
 import { log } from '../../config/Logger';
-import { Gasto } from '../models/Gasto.model';
+import { Gasto, TipoGasto } from '../models/Gasto.model';
 import { Data } from '../models/Data.model';
 import { Categoria } from '../models/Categoria.model';
 import { ModoDePagamento } from '../models/Modo_de_pagamento.model';
@@ -126,6 +126,8 @@ export class GastoController extends Controller {
             'categoria': gasto.categoria.nome,
             'modo de pagamento': gasto.modo_de_pagamento.nome,
             'data': formatData(gasto.data),
+            'tipo': gasto.tipo,
+            'observações': gasto.obs,
           });
         });
 
@@ -154,6 +156,8 @@ export class GastoController extends Controller {
             // { name: 'modo de pagamento.sigla', value: (gasto: Gasto) => gasto.modo_de_pagamento.sigla },
             { name: 'modo de pagamento', value: (gasto: Gasto) => gasto.modo_de_pagamento.nome },
             { name: 'data', value: (gasto: Gasto) => formatData(gasto.data) },
+            { name: 'tipo', value: (gasto: Gasto) => gasto.tipo },
+            { name: 'observações', value: (gasto: Gasto) => gasto.obs },
           ],
           gastos
         );
@@ -197,7 +201,7 @@ export class GastoController extends Controller {
   }
 
   public async create(): Promise<express.Response> {
-    const { data, valor } = this.req.body as { data: string, valor: number };
+    const { data, valor, tipo, obs } = this.req.body as { data: string, valor: number, tipo: TipoGasto, obs: string };
     const { categoria, modo_de_pagamento } = this.res.locals as { categoria: Categoria, modo_de_pagamento: ModoDePagamento };
 
     let token, pessoa;
@@ -228,6 +232,8 @@ export class GastoController extends Controller {
     gasto.modo_de_pagamento = modo_de_pagamento;
     gasto.data = new_data;
     gasto.pessoa = pessoa;
+    gasto.tipo = tipo;
+    gasto.obs = obs;
 
     try {
       await GastoService.save(gasto);
@@ -240,7 +246,7 @@ export class GastoController extends Controller {
   }
 
   public async update(): Promise<express.Response> {
-    const { data, valor } = this.req.body as { data: string, valor: number };
+    const { data, valor, tipo, obs } = this.req.body as { data: string, valor: number, tipo: TipoGasto, obs: string };
     const { gasto, categoria, modo_de_pagamento } = this.res.locals as { gasto: Gasto, categoria: Categoria, modo_de_pagamento: ModoDePagamento };
 
     if ( data !== undefined ) {
@@ -260,6 +266,8 @@ export class GastoController extends Controller {
     if ( valor !== undefined ) { gasto.valor = valor; }
     if ( categoria !== undefined ) {gasto.categoria = categoria; }
     if (modo_de_pagamento !== undefined) {gasto.modo_de_pagamento = modo_de_pagamento; }
+    if ( tipo !== undefined ) {gasto.tipo = tipo; }
+    if ( obs !== undefined ) {gasto.obs = obs; }
 
     try {
       await GastoService.save(gasto);

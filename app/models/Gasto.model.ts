@@ -8,6 +8,12 @@ import { Categoria } from './Categoria.model';
 import { ModoDePagamento } from './Modo_de_pagamento.model';
 import { Pessoa } from './Pessoa.model';
 
+export enum TipoGasto {
+  Fixo = 'Fixo',
+  Variavel = 'Variável',
+  Renda = 'Renda',
+}
+
 @Entity('gasto')
 export class Gasto extends BaseEntity {
 
@@ -16,6 +22,16 @@ export class Gasto extends BaseEntity {
 
   @Column('decimal', {precision: 13, scale: 2})
   public valor: number;
+
+  @Column({
+    type: 'enum',
+    enum: TipoGasto,
+    default: TipoGasto.Variavel,
+  })
+  public tipo: TipoGasto;
+
+  @Column('text', { default: '' })
+  public obs: string;
 
   @ManyToOne(() => Data, data => data.gastos, { nullable: false })
   public data: Data;

@@ -17,8 +17,9 @@
     "typeorm": "ts-node ./node_modules/.bin/typeorm",
     "migration:dev": "ts-node ./node_modules/.bin/typeorm migration:generate -c dev -n dev",
     "migration:dev:run": "ts-node ./node_modules/.bin/typeorm migration:run -c dev",
-    "migration:prod": "ts-node ./node_modules/.bin/typeorm migration:generate -c prod -n prod",
-    "migration:prod:run": "ts-node ./node_modules/.bin/typeorm migration:run -c prod"
+      "migration:prod": "ts-node ./node_modules/.bin/typeorm migration:generate -c prod -n prod",
+      "migration:prod:run": "ts-node ./node_modules/.bin/typeorm migration:run -c prod",
+      "migration:prod:revert": "ts-node ./node_modules/.bin/typeorm migration:revert -c prod"
   },
   "husky": {
     "hooks": {
