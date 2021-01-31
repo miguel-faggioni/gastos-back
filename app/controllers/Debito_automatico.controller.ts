@@ -7,6 +7,7 @@ import { AuthService } from '../services/Auth.service';
 import { PessoaService } from '../services/Pessoa.service';
 import { Categoria } from '../models/Categoria.model';
 import { ModoDePagamento } from '../models/Modo_de_pagamento.model';
+import { TipoGasto } from '../models/Gasto.model';
 
 export class DebitoAutomaticoController extends Controller {
 
@@ -44,7 +45,7 @@ export class DebitoAutomaticoController extends Controller {
   }
 
   public async create(): Promise<express.Response> {
-    const { dia, valor } = this.req.body as { dia: number, valor: number };
+    const { dia, valor, obs, tipo } = this.req.body as { dia: number, valor: number, obs: string, tipo: TipoGasto };
     const { categoria, modo_de_pagamento } = this.res.locals as { categoria: Categoria, modo_de_pagamento: ModoDePagamento };
 
     let token, pessoa;
@@ -64,6 +65,8 @@ export class DebitoAutomaticoController extends Controller {
     debitoAutomatico.categoria = categoria;
     debitoAutomatico.modo_de_pagamento = modo_de_pagamento;
     debitoAutomatico.pessoa = pessoa;
+    debitoAutomatico.tipo = tipo;
+    debitoAutomatico.obs = obs;
 
     try {
       await DebitoAutomaticoService.save(debitoAutomatico);
@@ -76,13 +79,15 @@ export class DebitoAutomaticoController extends Controller {
   }
 
   public async update(): Promise<express.Response> {
-    const { dia, valor } = this.req.body as { dia: number, valor: number };
+    const { dia, valor, obs, tipo } = this.req.body as { dia: number, valor: number, obs: string, tipo: TipoGasto };
     const { debitoAutomatico, categoria, modo_de_pagamento } = this.res.locals as { debitoAutomatico: DebitoAutomatico, categoria: Categoria, modo_de_pagamento: ModoDePagamento };
 
     if ( dia !== undefined ) {debitoAutomatico.dia_do_mes = dia; }
     if (valor !== undefined) {debitoAutomatico.valor = valor; }
     if (categoria !== undefined) {debitoAutomatico.categoria = categoria; }
     if (modo_de_pagamento !== undefined) {debitoAutomatico.modo_de_pagamento = modo_de_pagamento; }
+    if (tipo !== undefined) {debitoAutomatico.tipo = tipo; }
+    if (obs !== undefined) {debitoAutomatico.obs = obs; }
 
     try {
       await DebitoAutomaticoService.save(debitoAutomatico);

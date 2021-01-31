@@ -6,6 +6,7 @@ import { BaseEntity, Column, Entity,
 import { Categoria } from './Categoria.model';
 import { ModoDePagamento } from './Modo_de_pagamento.model';
 import { Pessoa } from './Pessoa.model';
+import { TipoGasto } from './Gasto.model';
 
 @Entity('debito_automatico')
 export class DebitoAutomatico extends BaseEntity {
@@ -18,6 +19,16 @@ export class DebitoAutomatico extends BaseEntity {
 
   @Column('decimal', {precision: 13, scale: 2})
   public valor: number;
+
+  @Column({
+    type: 'enum',
+    enum: TipoGasto,
+    default: TipoGasto.Variavel,
+  })
+  public tipo: TipoGasto;
+
+  @Column('text', { default: 'Débito automático' })
+  public obs: string;
 
   @ManyToOne(() => Categoria, categoria => categoria.debitos_automaticos, { nullable: false })
   public categoria: Categoria;

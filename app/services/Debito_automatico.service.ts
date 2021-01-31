@@ -22,9 +22,11 @@ SELECT
        CAST( DATE_PART('second',NOW()) AS SMALLINT)       AS segundo
 ON CONFLICT DO NOTHING;
 
-INSERT INTO public.gasto (valor, "dataUnixTimestamp", "categoriaId", "modoDePagamentoId", "pessoaId")
+INSERT INTO public.gasto (valor, tipo, obs, "dataUnixTimestamp", "categoriaId", "modoDePagamentoId", "pessoaId")
 SELECT
        valor,
+       tipo,
+       obs,
        CAST( 1000*EXTRACT(EPOCH FROM NOW()) AS BIGINT)    AS "dataUnixTimeStamp",
        "categoriaId",
        "modoDePagamentoId",
