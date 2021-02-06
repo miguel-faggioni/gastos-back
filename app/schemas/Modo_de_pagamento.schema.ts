@@ -11,7 +11,4 @@ export const modoDePagamentoSchema = {
     sigla: string(),
     icone: string(),
   }),
-  remove: object().keys({
-    substituirPor: number(),
-  }),
 };

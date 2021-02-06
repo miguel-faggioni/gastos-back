@@ -13,7 +13,6 @@ export class ModoDePagamentoRouter extends Router {
       .get('/', this.handler(ModoDePagamentoController.prototype.all))
       .delete('/:id', [
         CheckParamsId,
-        validator(modoDePagamentoSchema.remove),
       ], this.handler(ModoDePagamentoController.prototype.remove))
       .post('/', [
         validator(modoDePagamentoSchema.create),

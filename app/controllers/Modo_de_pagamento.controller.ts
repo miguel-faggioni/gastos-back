@@ -29,10 +29,12 @@ export class ModoDePagamentoController extends Controller {
   }
 
   public async remove(): Promise<express.Response> {
-    const { substituirPor } = this.req.body as { substituirPor: number };
+    let { substituirPor } = this.req.query as { substituirPor: string };
     const modoDePagamento = this.res.locals.modoDePagamento;
 
     if ( substituirPor !== undefined ) {
+
+      substituirPor = parseInt(substituirPor, 10);
 
       let token;
       try {
