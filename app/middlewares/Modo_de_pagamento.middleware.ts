@@ -3,7 +3,7 @@ import { log } from '../../config/Logger';
 import { AuthService } from '../services/Auth.service';
 import { ModoDePagamentoService } from '../services/Modo_de_pagamento.service';
 
-export async function CheckDelete(req: express.Request, res: express.Response, next: express.NextFunction) {
+export async function CheckParamsId(req: express.Request, res: express.Response, next: express.NextFunction) {
   const idModoDePagamento = req.params.id;
   const token = await AuthService.extractToken(req) as { id: number };
 
@@ -19,7 +19,7 @@ export async function CheckDelete(req: express.Request, res: express.Response, n
   }
 
   if ( !modoDePagamento ) {
-    log.warn('CheckDelete failed');
+    log.warn('CheckParamsId failed');
     return res.status(404).send(`ModoDePagamento não encontrado [id=${idModoDePagamento}]`);
   }
 

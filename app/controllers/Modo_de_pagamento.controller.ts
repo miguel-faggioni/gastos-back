@@ -102,4 +102,33 @@ export class ModoDePagamentoController extends Controller {
     return this.res.status(200).send(modoDePagamento);
   }
 
+  public async update(): Promise<express.Response> {
+    const modoDePagamento = this.res.locals.modoDePagamento;
+    const { nome, sigla, icone } = this.req.body as { nome: string, sigla: string, icone: string };
+
+    let token, pessoa;
+    try {
+      token = await AuthService.extractToken(this.req) as { id: number };
+      pessoa = await PessoaService.findOneBy({
+        id: token.id,
+      });
+    } catch (ex) {
+      log.error(ex);
+      return this.res.status(500).send();
+    }
+
+    if ( nome !== undefined ) { modoDePagamento.nome = nome; }
+    if ( sigla !== undefined ) { modoDePagamento.sigla = sigla; }
+    if ( icone !== undefined ) { modoDePagamento.icone = icone; }
+
+    try {
+      await ModoDePagamentoService.save(modoDePagamento);
+    } catch (ex) {
+      log.error(ex);
+      return this.res.status(500).send();
+    }
+
+    return this.res.status(200).send(modoDePagamento);
+  }
+
 }
