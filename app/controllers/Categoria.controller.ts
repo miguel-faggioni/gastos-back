@@ -34,7 +34,7 @@ export class CategoriaController extends Controller {
 
     if ( substituirPor !== undefined ) {
 
-      substituirPor = parseInt(substituirPor, 10);
+      const substituirPor_n = parseInt(substituirPor, 10);
 
       let token;
       try {
@@ -49,13 +49,13 @@ export class CategoriaController extends Controller {
           categoria: categoria,
           pessoa: {id: token.id},
         }, {
-          categoria: { id: substituirPor }
+          categoria: { id: substituirPor_n }
         });
         await DebitoAutomaticoService.update({
           categoria: categoria,
           pessoa: {id: token.id},
         }, {
-          categoria: { id: substituirPor }
+          categoria: { id: substituirPor_n }
         });
       } catch (ex) {
         log.error(ex);

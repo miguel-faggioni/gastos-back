@@ -3,7 +3,7 @@ import { log } from '../../config/Logger';
 import { AuthService } from '../services/Auth.service';
 import { CategoriaService } from '../services/Categoria.service';
 
-export async function CheckDelete(req: express.Request, res: express.Response, next: express.NextFunction) {
+export async function CheckParamsId(req: express.Request, res: express.Response, next: express.NextFunction) {
   const idCategoria = req.params.id;
   const token = await AuthService.extractToken(req) as { id: number };
 

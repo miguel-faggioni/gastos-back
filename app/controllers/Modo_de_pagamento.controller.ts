@@ -29,12 +29,12 @@ export class ModoDePagamentoController extends Controller {
   }
 
   public async remove(): Promise<express.Response> {
-    let { substituirPor } = this.req.query as { substituirPor: string };
+    const { substituirPor } = this.req.query as { substituirPor: string };
     const modoDePagamento = this.res.locals.modoDePagamento;
 
     if ( substituirPor !== undefined ) {
 
-      substituirPor = parseInt(substituirPor, 10);
+      const substituirPor_n = parseInt(substituirPor, 10);
 
       let token;
       try {
@@ -49,13 +49,13 @@ export class ModoDePagamentoController extends Controller {
           modo_de_pagamento: modoDePagamento,
           pessoa: {id: token.id},
         }, {
-          modo_de_pagamento: { id: substituirPor }
+          modo_de_pagamento: { id: substituirPor_n }
         });
         await DebitoAutomaticoService.update({
           modo_de_pagamento: modoDePagamento,
           pessoa: {id: token.id},
         }, {
-          modo_de_pagamento: { id: substituirPor }
+          modo_de_pagamento: { id: substituirPor_n }
         });
       } catch (ex) {
         log.error(ex);
