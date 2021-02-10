@@ -12,6 +12,7 @@ export enum TipoGasto {
   Fixo = 'Fixo',
   Variavel = 'Variável',
   Renda = 'Renda',
+  Investimento = 'Investimento',
 }
 
 @Entity('gasto')

@@ -14,6 +14,7 @@ enum TipoGasto {
   Fixo = 'Fixo',
   Variavel = 'Variável',
   Renda = 'Renda',
+  Investimento = 'Investimento',
 }
 
 @Entity('debito_automatico')
