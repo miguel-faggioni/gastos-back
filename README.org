@@ -1,0 +1,98 @@
+* Personal expenses management
+** Introduction
+   This project was made to personally help me manage my monthly expenses by being a system where daily expenses can be recorded and then later monitored to check where all the money is going.
+
+   Its features include ways to:
+
+   - input daily expenses, with its categories and expense type (fixed, variable, investment, or income);
+   - download all the expenses as .csv or .xlsx;
+   - register recurring monthly expenses that are automatically save on the given day of the month;
+
+   A running instance of the project, together with [[https://github.com/miguel-faggioni/gastos-front][frontend code]], can be found on https://anotar.coisa.online/.
+
+** Architecture
+   #+begin_src
+/
+├── .nvmrc - contains the version of node to be used in the project
+├── ssl - .pem files for the SSL certificates
+├── migration - files to create the needed tables on the database
+├── cronjob.sh - shell script to run the cronjobs for the recurrent expenses
+├── database.ts - database connection configuration
+├── config
+│   ├── Database.ts - configuration for typeORM
+│   ├── Logger.ts - logger setup
+│   ├── Queries.sql - SQL queries to create the needed tables for cronjobs on the database
+│   ├── Router.ts - configuration of all base routes
+│   └── Server.ts - setup for the server
+└── app
+    ├── controllers - funtions that actually do what the endpoint is supposed to do
+    ├── middlewares - functions to check conditions before passing to the controllers
+    ├── models - definitions of the classes and respective tables
+    ├── repository - functions to access the database tables
+    ├── routes - individual endpoints for each base route
+    ├── schemas - schemas to validate received request bodies
+    └── services - functions to ease the access to the database
+   #+end_src
+
+** Installing and running the project
+   After cloning the repository, install the needed packages with:
+   #+begin_src bash
+   yarn
+   #+end_src
+
+   In order to connect to the local environment, the ~database.local.ts~ file must be created, and for the production environment, the ~database.aws.ts~. When running the server, it looks for the connection configuration on ~database.ts~, so link it with ~ln -sfn database.aws.ts database.ts~ before running.
+
+   Create ~database.aws.ts~, and ~database.local.ts~ with the following format:
+   #+begin_src text :tangle database.ts
+const PRODUCTION_CONFIGURATION = {
+  DB: <database name>,
+  USER_DB: <database username>,
+  PASSWORD: <database password>,
+  PORT_DB: <database port>,
+  SERVER: <database server url>,
+  SECRET: <secret key to be used to sign the JWT>,
+};
+
+export const SERVERNAME = <folder inside ./ssl where the SSL certificate files are to be found>;
+export const DATABASE_CONFIGURATION = PRODUCTION_CONFIGURATION;
+   #+end_src 
+
+   Create the tables on the database:
+   #+begin_src 
+yarn migration:prod:run
+   #+end_src 
+
+   This will run the files on ~migration/prod~ on the database configured on ~database.aws.ts~. Then the ~config/Queries.sql~ must be run on the server to create the structure for running cronjobs on AWS.
+
+   Then to run the project locally run:
+   #+begin_src bash
+   yarn dev
+   #+end_src
+
+   This will make the system available on https://localhost:5001/ with a self-signed SSL certificate.
+
+** How to use
+   (very very basic) Documentation for the endpoints can be found on https://documenter.getpostman.com/view/5613876/TWDXoGUf
+
+** Self-hosting
+   In order to build and deploy when self-hosting, some scripts on ~package.json~ must be updated:
+
+   - ~deploy~
+     - change ~suave:~/gestao-de-gastos~ to the correct host name and folder to deploy to
+   - ~postdeploy~
+     - change ~suave~ to the correct host name
+     - change ~letsencrypt/work/live/api.coisa.online~ to the folder where the SSL certificates are stored
+     - change ~gestao-de-gastos~ to the folder where the code was deployed
+     - remove ~&& ln -sfn database.aws+local.ts database.ts~
+
+   Then to build and deploy the code, run:
+   #+begin_src bash
+   yarn build
+   yarn deploy
+   #+end_src
+
+** Contribution
+   Any type of contribution is welcome, however since this is a side-project, I kindly ask of you to be patient in case there is any delay to respond to any issue or pull-request opened.
+
+** License
+   Licensed under [[https://tldrlegal.com/license/gnu-affero-general-public-license-v3-(agpl-3.0)][GNU Affero General Public License v3]]
