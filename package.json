@@ -1,6 +1,6 @@
 {
   "name": "backend-Gestao_de_gastos",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "main": "server.js",
   "scripts": {
     "postinstall": "for p in patches/*.patch; do patch -p0 --forward < $p || true; done",
