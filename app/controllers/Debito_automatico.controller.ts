@@ -23,6 +23,9 @@ export class DebitoAutomaticoController extends Controller {
         pessoa: {id: token.id},
       }, {
         relations: ['categoria', 'modo_de_pagamento'],
+        order: {
+          'dia_do_mes': 'ASC', // earliest first
+        }
       });
     } catch (ex) {
       log.error(ex);
