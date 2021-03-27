@@ -14,12 +14,8 @@ import { ROUTER } from './Router';
 
 // configurações do Sentry
 import * as Sentry from '@sentry/node';
-Sentry.init({
-  dsn: 'https://a81dfbce8d8e4cf2ae1f6dcf26dcae79@o278147.ingest.sentry.io/5568952',
-  level: 'warn',
-  release: 'backend@' + config.VERSION,
-  environment: ( config.SERVERNAME === 'localhost' ? 'development' : 'production' ),
-});
+import {SentryConfig} from './Sentry';
+Sentry.init(SentryConfig);
 import { AuthService } from '../app/services/Auth.service';
 
 export class Server {
@@ -51,9 +47,7 @@ export class Server {
   }
 
   private ExpressConfiguration(): void {
-    if ( config.SERVERNAME !== 'localhost' ) {
-      this.app.use(Sentry.Handlers.requestHandler() as express.RequestHandler);
-    }
+    this.app.use(Sentry.Handlers.requestHandler());
 
     const uploadDir = __dirname + ( env.NODE_ENV === 'PRODUCTION' ? '/../..' : '/..' ) + '/uploaded';
     this.app.use('/arquivo/', formidable({
@@ -72,9 +66,9 @@ export class Server {
     });
     this.app.use(morgan('combined'));
     this.app.use(cors());
-    if ( config.SERVERNAME !== 'localhost' ) {
-      this.app.use(Sentry.Handlers.errorHandler() as express.ErrorRequestHandler);
-    }
+
+    this.app.use(Sentry.Handlers.errorHandler() as express.ErrorRequestHandler);
+    
     this.app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction): void => {
       err.status = 404;
       next(err);
@@ -97,13 +91,15 @@ export class Server {
             user,
             jwt,
           });
-        }
-        Sentry.configureScope((scope) => {
-          scope.setUser({
+          Sentry.setUser({
             id: jwt.id,
+            username: user.nome,
           });
-          scope.setTag('transaction_id', jwt);
-        });
+          const token = await AuthService.extractTokenUndecoded(req);
+          Sentry.configureScope((scope) => {
+            scope.setTag('transaction_id', token);
+          });
+        }
       } catch (ex) {
         // requisição sem token válido
       }
@@ -113,6 +109,7 @@ export class Server {
     for (const route of ROUTER) {
       this.app.use(route.path, route.middleware, route.handler);
     }
+
     this.app.use((req: express.Request, res: express.Response, next: express.NextFunction): void => {
       res.status(404);
       res.json({

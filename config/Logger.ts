@@ -1,11 +1,15 @@
 import { env } from 'process';
 import { Logger, QueryRunner } from 'typeorm';
 import * as winston from 'winston';
-import { config } from '../config';
+import * as Sentry from '@sentry/node';
+import {SentryConfig} from './Sentry';
+Sentry.init(SentryConfig);
+const SentryTransport = require('@synapsestudios/winston-sentry');
 
 // 'silly' | 'debug' | 'verbose' | 'info' | 'warn' | 'error'
 const DB_LOG_LEVEL = 'warn';
 const LOG_LEVEL = 'debug';
+const SENTRY_LOG_LEVEL = 'warn';
 
 const enumerateErrorFormat = winston.format((info) => {
   if (info instanceof Error) {
@@ -34,13 +38,10 @@ export class WinstonLogger implements Logger {
       ),
       defaultMeta: { service: 'typeorm-query' },
       transports: [
-        //
-        // - Write to all logs with level `info` and below to `combined.log`
-        // - Write all logs error (and below) to `error.log`.
-        //
         new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
         new winston.transports.File({ filename: 'logs/query.log' }),
         new winston.transports.File({ filename: 'logs/combined.log' }),
+        new SentryTransport({ Sentry, level: SENTRY_LOG_LEVEL }),
       ],
     });
 
@@ -85,7 +86,8 @@ export class WinstonLogger implements Logger {
   public logQuerySlow(time: number, query: string, parameters?: any[], queryRunner?: QueryRunner): any {
     this.logger.log({
       level: 'warn',
-      message: query,
+      message: '[Slow Query] ' + query,
+      query: query,
       parameters,
       time,
       what: 'slow-query',
@@ -139,10 +141,6 @@ export let log = winston.createLogger({
   ),
   defaultMeta: { service: 'console' },
   transports: [
-    //
-    // - Write to all logs with level `info` and below to `combined.log`
-    // - Write all logs to console
-    //
     new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
     new winston.transports.File({ filename: 'logs/combined.log' }),
     new winston.transports.File({ filename: 'logs/console.log' }),
@@ -163,5 +161,6 @@ export let log = winston.createLogger({
         }),
       ),
     }),
+    new SentryTransport({ Sentry, level: SENTRY_LOG_LEVEL }),
   ],
 });

@@ -15,4 +15,5 @@ export const Connection = createConnection({
   synchronize: false,
   type: DIALECT,
   username: config.DATABASE.USER_DB,
+  maxQueryExecutionTime: 250,
 });

@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "main": "server.js",
   "scripts": {
+    "postinstall": "for p in patches/*.patch; do patch -p0 --forward < $p || true; done",
     "prod": "npm run build && cd dist && cross-env NODE_ENV=PRODUCTION node Index.js",
     "dev": "nodemon",
     "lint": "./node_modules/.bin/tslint -c tslint.json 'app/**/*.ts'",
@@ -38,7 +39,9 @@
   "author": "Miguel F.",
   "license": "AGPL-3.0",
   "dependencies": {
-    "@sentry/node": "5.4.3",
+    "@sentry/node": "^6.2.3",
+    "@sentry/tracing": "^6.2.3",
+    "@synapsestudios/winston-sentry": "^2.1.0",
     "@types/express": "^4.11.1",
     "@types/express-formidable": "^1.0.3",
     "@types/joi": "^13.6.1",

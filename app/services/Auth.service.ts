@@ -22,6 +22,17 @@ export class AuthService {
     });
   }
 
+  public static extractTokenUndecoded(req: express.Request): Promise<any> {
+    return new Promise((resolve, reject) => {
+      bearer(req, (err: Error, token: string) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(token);
+      });
+    });
+  }
+
   public static validateToken(token: string): Promise<any> {
     return new Promise((resolve, reject) => {
       resolve(Auth.decode(token));
