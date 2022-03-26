@@ -11,7 +11,7 @@
     "build": "npm run clean && tsc --outDir dist",
     "postbuild": "cp package.json cronjob.sh .nvmrc dist/ && cp -r ssl/ dist/ && cp -r node_modules/ dist/",
     "deploy": "rsync -raz --progress dist/ suave:~/gestao-de-gastos/",
-    "postdeploy": "ssh suave 'ln -sfn ~/letsencrypt/work/live/api.coisa.online/ ~/gestao-de-gastos/ssl/ && cd ~/gestao-de-gastos/ && yarn run:screen' && ln -sfn database.aws+local.ts database.ts",
+    "postdeploy": "ssh suave 'ln -sfn ~/letsencrypt/config/live/api.coisa.online/ ~/gestao-de-gastos/ssl/ && cd ~/gestao-de-gastos/ && yarn run:screen' && ln -sfn database.aws+local.ts database.ts",
     "prerun:screen": "screen -X -S gestao_de_gastos 'quit' || true",
     "run:screen": "screen -S gestao_de_gastos -d -m node Index.js",
     "clean": "rimraf dist",
